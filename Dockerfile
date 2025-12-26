@@ -1,4 +1,4 @@
-FROM ubuntu:24.10
+FROM ubuntu:24.04
 ARG timezone=Europe/Brussels
 
 ENV TERM xterm-256color
