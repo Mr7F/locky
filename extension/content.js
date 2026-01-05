@@ -101,6 +101,13 @@ function findInputs(selectorsInput1, selectorsInput2 = null, alrt = true) {
         return 1
     }
 
+    function sortInputs(inputs) {
+        return [
+            ...[...inputs].filter((i) => !isHidden(i)),
+            ...[...inputs].filter((i) => isHidden(i)),
+        ];
+    }
+
     // Get the form by priorities
     let forms = document.querySelectorAll(formSelector)
     forms = [...forms].sort((a, b) => formScore(a) - formScore(b))
@@ -125,24 +132,22 @@ function findInputs(selectorsInput1, selectorsInput2 = null, alrt = true) {
     forms.push(...to_add)
 
     for (const form of forms) {
-        const inputs1 = form.querySelectorAll(selectorsInput1.join(','))
+        const inputs1 = sortInputs(form.querySelectorAll(selectorsInput1.join(',')))
+        if (!inputs1?.length) {
+            continue
+        }
+        const input1 = inputs1[0]
+
         if (!selectorsInput2) {
-            if (!inputs1?.length) {
-                continue
-            }
-            const input1 = inputs1[0]
             input1.value = ''
             return input1
         }
 
-        const selector2 = selectorsInput2.join(',')
-        for (const input1 of inputs1) {
-            const input2 = form.querySelector(selector2)
-            if (input2) {
-                input1.value = ''
-                input2.value = ''
-                return [input1, input2]
-            }
+        const inputs2 = sortInputs(form.querySelectorAll(selectorsInput2.join(',')))
+        if (inputs2.length) {
+            input1.value = ''
+            inputs2[0].value = ''
+            return [input1, inputs2[0]]
         }
     }
     if (alrt) {
@@ -255,6 +260,7 @@ async function _typeText(
     alrt = true
 ) {
     const inputs = findInputs(loginSelectors, passwordSelectors, alrt)
+    console.log(inputs)
     if (!inputs) {
         return
     }
@@ -491,7 +497,7 @@ function showAlert(message) {
 
 function isHidden(el) {
     // https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
-    return el.offsetParent === null
+    return el.offsetParent === null || el.type === "hidden"
 }
 
 function createElementFromHTML(htmlString) {
