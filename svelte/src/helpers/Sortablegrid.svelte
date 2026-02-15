@@ -40,6 +40,14 @@
         return [].indexOf.call(children, element)
     }
 
+    function isTouchEvent(e: MouseEvent | TouchEvent): e is TouchEvent {
+        return 'touches' in e
+    }
+
+    function isMouseEvent(e: MouseEvent | TouchEvent): e is MouseEvent {
+        return 'clientX' in e && !('touches' in e)
+    }
+
     // On desktop, the drag even is triggered when a threshold is reached
     // for the movement of the mouse. So we do not interpret "click" events as
     // drag events
@@ -74,7 +82,7 @@
         let mouseX
         let mouseY
 
-        if (event instanceof TouchEvent) {
+        if (isTouchEvent(event)) {
             // mobile
             mouseX = event.touches[0].clientX
             mouseY = event.touches[0].clientY
@@ -91,7 +99,11 @@
         return [mouseX, mouseY]
     }
 
-    function touchStart(event: TouchEvent) {
+    function touchStart(event) {
+        if (event.button !== 0 && !event.touches) {
+            return
+        }
+
         // on mobile, should press and wait a bit before dragging
         // (because we should be able to scroll)
         const clonedEvent = cloneEvent(event)
@@ -101,7 +113,7 @@
     }
 
     function mouseDown(event: MouseEvent | TouchEvent) {
-        if (event instanceof MouseEvent && event.button !== 0) {
+        if (!isTouchEvent(event) && event.button !== 0) {
             return
         }
 
@@ -117,7 +129,7 @@
             clearTimeout(mouseTimer)
             mouseTimer = null
         }
-        if (!dragging || (event instanceof MouseEvent && event.button !== 0)) {
+        if (!dragging || (isMouseEvent(event) && event.button !== 0)) {
             return
         }
         if (action) {
@@ -262,7 +274,7 @@
         draggedIndex = getElementIndex(target)
 
         draggedItem = items[draggedIndex]
-        if (event instanceof TouchEvent) {
+        if (isTouchEvent(event)) {
             // mobile
             xPosElement = target.offsetWidth / 2
             yPosElement = target.offsetHeight / 2
