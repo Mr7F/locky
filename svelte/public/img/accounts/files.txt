@@ -92,7 +92,6 @@ trello.svg
 tripadvisor.svg
 tumblr.svg
 twitch.svg
-twitter.svg
 ubisoft.png
 ubuntu.svg
 udemy.png
@@ -106,6 +105,7 @@ whatsapp.svg
 wifi.png
 wikipedia.png
 wordpress.svg
+x_twitter.svg
 yahoo.svg
 youtube.svg
 zamnesia.png

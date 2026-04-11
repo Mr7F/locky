@@ -368,7 +368,7 @@ async function _twitter(login, password) {
 
     let elLogin = document.querySelector('input[autocomplete="username"]')
     if (!elLogin) {
-        elLogin = document.querySelector('input[name="text"]')
+        elLogin = document.querySelector('input[name="email"]')
     }
     if (!elLogin) {
         showAlert('Failed to find the login form')
